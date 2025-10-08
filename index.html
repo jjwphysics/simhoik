@@ -1,2 +1,124 @@
-<h1>Our Website</h1>
-<p style="color: blue;">반갑습니다!</p>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>H O I K</title>
+  <meta name="description" content="HOIK 메인" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Pretendard Variable", "Inter", "system-ui", "Noto Sans KR", "Apple SD Gothic Neo", "sans-serif"]
+          },
+          letterSpacing: {
+            widehero: ".4em"
+          },
+          colors: {
+            ink: { DEFAULT: "#f1f5f9" },
+            accent: { DEFAULT: "#38bdf8" }
+          }
+        }
+      }
+    };
+  </script>
+  <!-- Pretendard Variable -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css"/>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Subtle neon glow animation */
+    .glow {
+      text-shadow:
+        0 0 6px rgba(56, 189, 248, 0.5),
+        0 0 20px rgba(56, 189, 248, 0.3),
+        0 0 40px rgba(56, 189, 248, 0.15);
+      animation: pulseGlow 3.8s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% {
+        text-shadow: 0 0 5px rgba(56,189,248,.45), 0 0 16px rgba(56,189,248,.28), 0 0 32px rgba(56,189,248,.12);
+      }
+      50% {
+        text-shadow: 0 0 9px rgba(56,189,248,.95), 0 0 26px rgba(56,189,248,.6), 0 0 54px rgba(56,189,248,.32);
+      }
+    }
+    /* smaller, subtler glow */
+    .glow-sm {
+      text-shadow: 0 0 3px rgba(56,189,248,.45), 0 0 10px rgba(56,189,248,.28);
+      animation: pulseGlow 3.8s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) { (prefers-reduced-motion: reduce) {
+      .glow { animation: none; }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900">
+  <!-- Top two menus (메인 / 호익문학) -->
+  <header class="w-full border-b border-white/10 backdrop-blur">
+    <nav class="max-w-5xl mx-auto grid grid-cols-2 divide-x divide-white/10">
+      <a href="/" class="text-center py-3 text-lg tracking-tight hover:bg-white/5">메인</a>
+      <a href="/hoik.html" class="text-center py-3 text-lg tracking-tight hover:bg-white/5">호익문학</a>
+    </nav>
+  </header>
+
+  <!-- Main center block -->
+  <main class="max-w-5xl mx-auto px-6 py-24 sm:py-32 grid place-items-center text-center">
+    <div>
+      <p class="text-slate-400 mb-6">어떻게 사람 이름이...</p>
+      <h1 class="glow font-extrabold leading-none mb-4 text-[20vw] sm:text-[16vw] md:text-[13vw]">HOIK!</h1>
+      <p class="glow-sm text-2xl sm:text-3xl font-semibold mb-3 text-sky-200">민주파출소 이단심문관#애국자</p>
+      <p id="lol-tier" class="text-xl sm:text-2xl font-semibold mb-1 text-sky-300">BRONZE 1 19 LP</p>
+      <p id="lol-wl" class="text-lg sm:text-xl text-slate-300">600 W | 612 L</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 py-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-sm flex flex-col sm:flex-row items-center gap-3 justify-between text-slate-300">
+      <p>© <span id="year"></span> 너의 이름. All rights reserved.</p>
+      <div class="opacity-70">HOIK</div>
+    </div>
+  </footer>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ===== LoL Stats fetch (via serverless proxy) =====
+    const RIOT_NAME = '민주파출소 이단심문관';
+    const RIOT_TAG = '애국자';
+    const REGION_PLATFORM = 'kr';
+    const REGION_REGIONAL = 'asia';
+    const API_BASE = 'https://YOUR-WORKER-SUBDOMAIN.workers.dev';
+
+    async function loadLol(){
+      try{
+        const res = await fetch(`${API_BASE}/lol?platform=${REGION_PLATFORM}&regional=${REGION_REGIONAL}&name=${encodeURIComponent(RIOT_NAME)}&tag=${encodeURIComponent(RIOT_TAG)}`, { cache: 'no-store' });
+        if(!res.ok) throw new Error('api '+res.status);
+        const data = await res.json();
+        const entry = (data.entries||[]).find(e=>e.queueType==='RANKED_SOLO_5x5') || (data.entries||[])[0];
+        const tierEl = document.getElementById('lol-tier');
+        const wlEl = document.getElementById('lol-wl');
+        if(entry){
+          const tier = `${entry.tier ?? 'UNRANKED'} ${entry.rank ?? ''}`.trim();
+          const lp = `${entry.leaguePoints ?? 0} LP`;
+          tierEl.textContent = tier === 'UNRANKED' ? 'UNRANKED' : `${tier} ${lp}`;
+          wlEl.textContent = `${entry.wins ?? 0} W | ${entry.losses ?? 0} L`;
+        }else{
+          tierEl.textContent = 'UNRANKED';
+          wlEl.textContent = `0 W | 0 L`;
+        }
+      }catch(e){ console.error(e); }
+    }
+    loadLol();
+  </script>
+</body>
+</html>
