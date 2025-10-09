@@ -34,19 +34,21 @@
   <style>
     html { scroll-behavior: smooth; }
 
-    /* ===== 은은한 GIF 배경 추가 ===== */
+    /* ===== 은은한 GIF 배경 (타일 반복) ===== */
     #gif-background {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0;
-      background-image: url('https://media.tenor.com/6zMxKcIxlLAAAAAC/%EB%85%B8%EB%AC%B4%ED%98%84.gif');
+      inset: 0;
+      z-index: 0;           /* 본문(헤더/메인/푸터)은 z-10로 올림 */
+      pointer-events: none;
+      background-image: url('https://tenor.com/bVBm9.gif');
       background-repeat: repeat;
-      background-size: 300px auto; /* 패턴 크기 */
+      background-size: 320px auto;   /* 240~420px 사이로 조절 가능 */
       background-position: center;
-      opacity: 0.10; /* 투명도 (0.05~0.2 사이로 조절 가능) */
-      pointer-events: none; /* 클릭 방지 */
-      filter: brightness(1.1) contrast(1.05) saturate(1.1);
+      opacity: 0.35;                 /* 더 진하게 보이게 */
+      filter: brightness(1.05) contrast(1.05) saturate(1.05);
+    }
+    @media (prefers-reduced-motion: reduce){
+      #gif-background{ display:none; }
     }
 
     /* Subtle neon glow animation */
@@ -70,14 +72,15 @@
       text-shadow: 0 0 3px rgba(56,189,248,.45), 0 0 10px rgba(56,189,248,.28);
       animation: pulseGlow 3.8s ease-in-out infinite;
     }
-    @media (prefers-reduced-motion: reduce) { (prefers-reduced-motion: reduce) {
+    /* ← 네 코드에 있던 이 줄이 문법 깨져 있었음. 정상화함. */
+    @media (prefers-reduced-motion: reduce) {
       .glow { animation: none; }
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 relative">
-  <!-- 🌌 추가된 GIF 배경 -->
-  <div id="gif-background"></div>
+<body class="min-h-screen font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900">
+  <!-- 🌌 추가: 노무현 GIF 타일 배경 -->
+  <div id="gif-background" aria-hidden="true"></div>
 
   <!-- Top two menus (메인 / 호익문학) -->
   <header class="relative z-10 w-full border-b border-white/10 backdrop-blur">
