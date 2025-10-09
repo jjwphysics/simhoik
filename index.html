@@ -34,6 +34,21 @@
   <style>
     html { scroll-behavior: smooth; }
 
+    /* ===== 은은한 GIF 배경 추가 ===== */
+    #gif-background {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      background-image: url('https://media.tenor.com/6zMxKcIxlLAAAAAC/%EB%85%B8%EB%AC%B4%ED%98%84.gif');
+      background-repeat: repeat;
+      background-size: 300px auto; /* 패턴 크기 */
+      background-position: center;
+      opacity: 0.10; /* 투명도 (0.05~0.2 사이로 조절 가능) */
+      pointer-events: none; /* 클릭 방지 */
+      filter: brightness(1.1) contrast(1.05) saturate(1.1);
+    }
+
     /* Subtle neon glow animation */
     .glow {
       text-shadow:
@@ -60,9 +75,12 @@
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900">
+<body class="min-h-screen font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 relative">
+  <!-- 🌌 추가된 GIF 배경 -->
+  <div id="gif-background"></div>
+
   <!-- Top two menus (메인 / 호익문학) -->
-  <header class="w-full border-b border-white/10 backdrop-blur">
+  <header class="relative z-10 w-full border-b border-white/10 backdrop-blur">
     <nav class="max-w-5xl mx-auto grid grid-cols-2 divide-x divide-white/10">
       <a href="/" class="text-center py-3 text-lg tracking-tight hover:bg-white/5">메인</a>
       <a href="/hoik.html" class="text-center py-3 text-lg tracking-tight hover:bg-white/5">호익문학</a>
@@ -70,7 +88,7 @@
   </header>
 
   <!-- Main center block -->
-  <main class="max-w-5xl mx-auto px-6 py-24 sm:py-32 grid place-items-center text-center">
+  <main class="relative z-10 max-w-5xl mx-auto px-6 py-24 sm:py-32 grid place-items-center text-center">
     <div>
       <p class="text-slate-400 mb-6">어떻게 사람 이름이...</p>
       <h1 class="glow font-extrabold leading-none mb-4 text-[20vw] sm:text-[16vw] md:text-[13vw]">HOIK!</h1>
@@ -81,7 +99,7 @@
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-white/10 py-10">
+  <footer class="relative z-10 border-t border-white/10 py-10">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 text-sm flex flex-col sm:flex-row items-center gap-3 justify-between text-slate-300">
       <p>© <span id="year"></span> 심호익 (SimHoik) . All rights reserved.</p>
       <div class="opacity-70">HOIK</div>
