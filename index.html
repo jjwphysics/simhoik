@@ -4,12 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>H O I K</title>
-  <meta name="description" content="HOIK 메인" />
   <meta name="theme-color" content="#0f172a" />
 
-  <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    /* Tailwind CDN config — 첫 코드와 동일하게 폰트 스택에 Pretendard를 최우선으로 등록 */
     tailwind.config = {
       theme: {
         extend: {
@@ -27,31 +26,133 @@
       }
     };
   </script>
-  <!-- Pretendard Variable -->
+  <!-- Pretendard Variable (font) -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css"/>
-
   <style>
-    html { scroll-behavior: smooth; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden; /* 슬라이드 위해 고정 */
+      background: transparent; /* Tailwind 그라디언트가 보이도록 */
+      font-family: 'Pretendard Variable', sans-serif;
+      color: #f1f5f9;
+    }
 
-    /* ===== 은은한 GIF 배경 (타일 반복) ===== */
-    #gif-background {
-      position: fixed;
-      inset: 0;
-      z-index: 0;           /* 본문(헤더/메인/푸터)은 z-10로 올림 */
-      pointer-events: none;
-      background-image: url('https://tenor.com/bVBm9.gif');
-      background-repeat: repeat;
-      background-size: 320px auto;   /* 240~420px 사이로 조절 가능 */
+    /* ===== 섹션 슬라이드 ===== */
+    .section-container {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    section {
+      height: 100vh;
+      width: 100vw;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      scroll-snap-align: start;
+      position: relative;          /* 배경 레이어를 위한 기준 */
+      overflow: hidden;            /* 블러 외곽 잘림 방지 */
+      /* 아래 두 줄은 섹션마다 다른 배경을 위한 기본값 (JS에서 덮어씀) */
+      --blur: 14px;                /* data-blur 로 변경 가능 */
+      --bg-opacity: .38;           /* data-bg-opacity 로 변경 가능 (0~1) */
+      --bg-tint: rgba(2,6,23,.40); /* data-tint 로 변경 가능 (색 또는 gradient) */
+    }
+    /* 섹션 내용이 배경 위에 올라오도록 */
+    section > * { position: relative; z-index: 2; }
+
+    /* === 섹션별 배경 이미지 레이어 (::before) ===
+       data-bg 로 넣은 이미지를 흐리게/희미하게 깔아준다.
+       본문(body)의 Tailwind 그라디언트는 그대로 남고, 이미지는 낮은 불투명도 + 블러로만 보임. */
+    section[data-bg]::before {
+      content: "";
+      position: absolute; inset: -6%;  /* 약간 키워서 블러 테두리 보임 방지 */
+      z-index: 0;
+      background-image: var(--bg);
+      background-size: cover;
       background-position: center;
-      opacity: 0.35;                 /* 더 진하게 보이게 */
-      filter: brightness(1.05) contrast(1.05) saturate(1.05);
+      filter: blur(var(--blur)) saturate(1.05);
+      opacity: var(--bg-opacity);
+      transform: scale(1.06);
+      pointer-events: none;
     }
-    @media (prefers-reduced-motion: reduce){
-      #gif-background{ display:none; }
+    /* 색/그라디언트 틴트 레이어 (::after)
+       섹션 배경색(바디 그라디언트) 느낌을 유지하도록 이미지 위로 얇게 덮는다. */
+    section[data-bg]::after {
+      content: "";
+      position: absolute; inset: 0;
+      z-index: 1;
+      background: var(--bg-tint);
+      mix-blend-mode: multiply; /* 과하면 제거 가능 */
+      pointer-events: none;
     }
 
-    /* Subtle neon glow animation */
+    /* ===== Glow Animation (Rainbow) ===== */
+    @keyframes rainbowGlow { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
+    .glow-rainbow {
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(255,255,255,0.3);
+      animation: rainbowGlow 6s linear infinite;
+    }
+
+    /* ===== 인디케이터 ===== */
+    .indicator {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 50;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #475569;
+      transition: background-color 0.3s;
+    }
+    .dot.active {
+      background-color: #38bdf8;
+    }
+  
+    /* ===== Rainbow outline that orbits the text + bloom ===== */
+    .hoik { position: relative; display: inline-block; }
+    .hoik .rainbow { position: relative; display:inline-block; color: transparent; -webkit-text-fill-color: transparent; }
+    .hoik .rainbow::before,
+    .hoik .rainbow::after{
+      content: attr(data-text);
+      position:absolute; inset:0; display:block;
+      color: transparent; -webkit-text-fill-color: transparent;
+      background: conic-gradient(from 0deg,
+        #ff004c, #ff7a00, #ffd400, #7eff00, #00ffd5, #0095ff, #7a00ff, #ff00c8, #ff004c);
+      -webkit-background-clip: text; background-clip: text;
+      animation: spinHue 6s linear infinite;
+    }
+    .hoik .rainbow::after{ filter: blur(14px) saturate(1.35); opacity: .85; }
+    @keyframes spinHue { to { transform: rotate(360deg); } }
+  
+    /* 헤더 네비 (복구) */
+    header.site-header{position:fixed;top:0;left:0;right:0;z-index:60;backdrop-filter:blur(8px);background:rgba(2,6,23,.35);border-bottom:1px solid rgba(148,163,184,.2)}
+    header.site-header nav{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr}
+    header.site-header a{display:block;text-align:center;padding:.8rem 0;border-right:1px solid rgba(148,163,184,.15);text-decoration:none;color:#e5edf6}
+    header.site-header a:last-child{border-right:0}
+    header.site-header a:hover{background:rgba(255,255,255,.06)}
+
+    /* HOIK SVG 크기 (반응형) */
+    .hoik-svg{width:min(80vw,1100px);height:auto}
+    @media (min-width:640px){.hoik-svg{width:min(70vw,1000px)}}
+    @media (min-width:1024px){.hoik-svg{width:min(60vw,900px)}}
+    .hoik .fill{fill:#ffffff; paint-order:fill;}
+    .hoik .stroke{fill:none; stroke:url(#rg); stroke-width:28; stroke-linejoin:round; filter:url(#glow); opacity:.95}
+  
+    /* === rollback: soft neon glow for HOIK text === */
     .glow {
       text-shadow:
         0 0 6px rgba(56, 189, 248, 0.5),
@@ -60,86 +161,144 @@
       animation: pulseGlow 3.8s ease-in-out infinite;
     }
     @keyframes pulseGlow {
-      0%, 100% {
-        text-shadow: 0 0 5px rgba(56,189,248,.45), 0 0 16px rgba(56,189,248,.28), 0 0 32px rgba(56,189,248,.12);
-      }
-      50% {
-        text-shadow: 0 0 9px rgba(56,189,248,.95), 0 0 26px rgba(56,189,248,.6), 0 0 54px rgba(56,189,248,.32);
-      }
+      0%, 100% { text-shadow: 0 0 5px rgba(56,189,248,.45), 0 0 16px rgba(56,189,248,.28), 0 0 32px rgba(56,189,248,.12); }
+      50% { text-shadow: 0 0 9px rgba(56,189,248,.95), 0 0 26px rgba(56,189,248,.6), 0 0 54px rgba(56,189,248,.32); }
     }
-    /* smaller, subtler glow */
-    .glow-sm {
-      text-shadow: 0 0 3px rgba(56,189,248,.45), 0 0 10px rgba(56,189,248,.28);
-      animation: pulseGlow 3.8s ease-in-out infinite;
+    .glow-sm { text-shadow: 0 0 3px rgba(56,189,248,.45), 0 0 10px rgba(56,189,248,.28); animation: pulseGlow 3.8s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce){ .glow, .glow-sm { animation: none; } }
+  
+    /* ===== 은은한 GIF 배경 (타일 반복) =====
+       섹션별 이미지가 더 중요하면 아래 display:none 으로 끄면 됨. */
+    #gif-background {
+      position: fixed;
+      inset: 0;
+      z-index: 0;           /* 본문은 z-10 이상 */
+      pointer-events: none;
+      background-image: url('https://tenor.com/bVBm9.gif');
+      background-repeat: repeat;
+      background-size: 320px auto;   /* 240~420px 사이로 조절 가능 */
+      background-position: center;
+      opacity: 0.35;                 /* 투명도 */
+      filter: brightness(1.05) contrast(1.05) saturate(1.05);
+      /* display: none; */
     }
-    /* ← 네 코드에 있던 이 줄이 문법 깨져 있었음. 정상화함. */
-    @media (prefers-reduced-motion: reduce) {
-      .glow { animation: none; }
+    @media (prefers-reduced-motion: reduce){
+      #gif-background{ display:none; }
     }
   </style>
 </head>
 <body class="min-h-screen font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900">
-  <!-- 🌌 추가: 노무현 GIF 타일 배경 -->
+  <!-- 🌌 GIF 타일 배경 -->
   <div id="gif-background" aria-hidden="true"></div>
-
-  <!-- Top two menus (메인 / 호익문학) -->
-  <header class="relative z-10 w-full border-b border-white/10 backdrop-blur">
-    <nav class="max-w-5xl mx-auto grid grid-cols-2 divide-x divide-white/10">
-      <a href="/" class="text-center py-3 text-lg tracking-tight hover:bg-white/5">메인</a>
-      <a href="/hoik.html" class="text-center py-3 text-lg tracking-tight hover:bg-white/5">호익문학</a>
+  <!-- 상단 메뉴 (복구) -->
+  <header class="site-header">
+    <nav>
+      <a href="/">메인</a>
+      <a href="/hoik.html">호익문학</a>
     </nav>
   </header>
+  <div id="container" class="section-container">
 
-  <!-- Main center block -->
-  <main class="relative z-10 max-w-5xl mx-auto px-6 py-24 sm:py-32 grid place-items-center text-center">
-    <div>
+    <!-- 첫 섹션
+         ▼▼▼ 여기 data-bg 에 네가 원하는 이미지 링크를 넣으면 된다.
+         필요시 data-blur, data-bg-opacity, data-tint 로 강도와 색감을 조절. -->
+    <section id="home"
+             data-bg="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYlX9Pk_lw5RUNgJNoSFOVSPUSHzAU3crM7A&s"
+             data-blur="22"                   
+             data-bg-opacity=".34"            
+             data-tint="rgba(2,6,23,.45)"     
+             style="padding-top:3.5rem">
       <p class="text-slate-400 mb-6">어떻게 사람 이름이...</p>
       <h1 class="glow font-extrabold leading-none mb-4 text-[20vw] sm:text-[16vw] md:text-[13vw]">HOIK!</h1>
       <p class="glow-sm text-2xl sm:text-3xl font-semibold mb-3 text-sky-200">민주파출소 이단심문관#애국자</p>
-      <p id="lol-tier" class="text-xl sm:text-2xl font-semibold mb-1 text-sky-300">BRONZE 1 12 LP</p>
-      <p id="lol-wl" class="text-lg sm:text-xl text-slate-300">307 W | 312 L</p>
-    </div>
-  </main>
+      <p class="text-xl sm:text-2xl font-semibold mb-1 text-sky-300">BRONZE 1 12 LP</p>
+      <p class="text-lg sm:text-xl text-slate-300 mb-10">307 W | 312 L</p>
+      <div class="mt-10"><span class="text-slate-500 animate-bounce">▼ Scroll</span></div>
+    </section>
 
-  <!-- Footer -->
-  <footer class="relative z-10 border-t border-white/10 py-10">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-sm flex flex-col sm:flex-row items-center gap-3 justify-between text-slate-300">
-      <p>© <span id="year"></span> 심호익 (SimHoik) . All rights reserved.</p>
-      <div class="opacity-70">HOIK</div>
-    </div>
-  </footer>
+    <!-- 두 번째 섹션
+         ▼▼▼ 이 섹션에도 원하는 배경 이미지를 data-bg 로 넣을 수 있음. -->
+    <section id="about"
+             data-bg="https://img.khan.co.kr/news/2012/04/30/l_2012043001004055300311093.webp"
+             data-blur="16"
+             data-bg-opacity=".28"
+             data-tint="rgba(2,6,23,.40)">
+      <h2 class="text-5xl sm:text-6xl font-extrabold text-sky-300 mb-10">WHAT IS HOIK?</h2>
+      <p class="max-w-3xl text-slate-300 text-lg leading-relaxed px-6 text-center">
+        놀랍게도, 호익은 사람의 이름이다.<br>
+        2005년 여수에서 태어난 것으로 추정된다.<br>
+        이름은 호익의 할아버지께서 지어 주셨다고 한다.<br>
+        그러나 아직 학계는 이것이 진정 사람의 이름인지 연구 중이라고 한다.
+      </p>
+    </section>
+
+  </div>
+
+  <!-- 인디케이터 -->
+  <div class="indicator">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
 
   <script>
-    // Year
-    document.getElementById('year').textContent = new Date().getFullYear();
+    const container = document.getElementById('container');
+    const dots = document.querySelectorAll('.dot');
+    let current = 0;
+    let total = 2; // 섹션 갯수에 맞게 자동 계산하도록 아래서 덮어씀
 
-    // ===== LoL Stats fetch (via serverless proxy) =====
-    const RIOT_NAME = '민주파출소 이단심문관';
-    const RIOT_TAG = '애국자';
-    const REGION_PLATFORM = 'kr';
-    const REGION_REGIONAL = 'asia';
-    const API_BASE = 'https://YOUR-WORKER-SUBDOMAIN.workers.dev';
-
-    async function loadLol(){
-      try{
-        const res = await fetch(`${API_BASE}/lol?platform=${REGION_PLATFORM}&regional=${REGION_REGIONAL}&name=${encodeURIComponent(RIOT_NAME)}&tag=${encodeURIComponent(RIOT_TAG)}`, { cache: 'no-store' });
-        if(!res.ok) throw new Error('api '+res.status);
-        const data = await res.json();
-        const entry = (data.entries||[]).find(e=>e.queueType==='RANKED_SOLO_5x5') || (data.entries||[])[0];
-        const tierEl = document.getElementById('lol-tier');
-        const wlEl = document.getElementById('lol-wl');
-        if(entry){
-          const tier = `${entry.tier ?? 'UNRANKED'} ${entry.rank ?? ''}`.trim();
-          const lp = `${entry.leaguePoints ?? 0} LP`;
-          tierEl.textContent = tier === 'UNRANKED' ? 'UNRANKED' : `${tier} ${lp}`;
-          wlEl.textContent = `${entry.wins ?? 0} W | ${entry.losses ?? 0} L`;
-        }else{
-          tierEl.textContent = 'UNRANKED';
-          wlEl.textContent = `0 W | 0 L`;
-        }
-      }catch(e){ console.error(e); }
+    function updateSlide(index) {
+      container.style.transform = `translateY(-${index * 100}vh)`;
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      current = index;
     }
-    loadLol();
+
+    window.addEventListener('wheel', (e) => {
+      if (e.deltaY > 50 && current < total - 1) updateSlide(current + 1);
+      else if (e.deltaY < -50 && current > 0) updateSlide(current - 1);
+    });
+
+    let startY = 0;
+    window.addEventListener('touchstart', (e) => startY = e.touches[0].clientY);
+    window.addEventListener('touchend', (e) => {
+      let endY = e.changedTouches[0].clientY;
+      if (startY - endY > 50 && current < total - 1) updateSlide(current + 1);
+      else if (endY - startY > 50 && current > 0) updateSlide(current - 1);
+    });
+
+    // ===== 섹션별 배경 이미지 초기화 =====
+    const sections = Array.from(document.querySelectorAll('section'));
+    total = sections.length; // 실제 섹션 수로 갱신
+
+    // 인디케이터 점 갯수 자동 생성 (필요시)
+    const indicator = document.querySelector('.indicator');
+    if (indicator && indicator.children.length !== total) {
+      indicator.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => updateSlide(i));
+        indicator.appendChild(d);
+      }
+    }
+
+    // data-bg, data-blur, data-bg-opacity, data-tint → CSS 변수로 주입
+    sections.forEach(sec => {
+      const url = sec.dataset.bg;
+      if (url) {
+        sec.style.setProperty('--bg', `url("${url}")`);
+      }
+      if (sec.dataset.blur) {
+        const v = sec.dataset.blur.trim();
+        sec.style.setProperty('--blur', /px$/.test(v) ? v : v + 'px');
+      }
+      if (sec.dataset.bgOpacity) {
+        sec.style.setProperty('--bg-opacity', sec.dataset.bgOpacity);
+      }
+      if (sec.dataset.tint) {
+        // 색값 또는 linear-gradient(...) 모두 허용
+        sec.style.setProperty('--bg-tint', sec.dataset.tint);
+      }
+    });
   </script>
 </body>
 </html>
