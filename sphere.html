@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>조건 만족 구 시각화</title>
+  <style>
+    html,body{height:100%;margin:0;background:#0b1020}
+    #app{position:fixed;inset:0}
+    .panel{position:fixed;left:12px;top:12px;padding:10px 12px;background:rgba(15,23,42,.7);
+      border:1px solid rgba(148,163,184,.35);border-radius:12px;color:#e5e7eb;font:14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", sans-serif}
+    .panel h1{margin:0 0 6px 0;font-size:15px;color:#93c5fd}
+  </style>
+  <!-- three.js (defer로 늦게 실행) -->
+  <script src="https://unpkg.com/three@0.161.0/build/three.min.js" defer></script>
+  <script src="https://unpkg.com/three@0.161.0/examples/js/controls/OrbitControls.js" defer></script>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="panel">
+    <h1>구 회전·확대 가능</h1>
+    중심 C=(8,8,4√5), 반지름 r=12 · xy평면 교선 원 반지름 8 · z축 교점 간 거리 8
+  </div>
+
+  <script>
+  // 외부 스크립트 로드 대기
+  document.addEventListener('DOMContentLoaded', () => {
+    const wait = () => (window.THREE && THREE.OrbitControls) ? init() : requestAnimationFrame(wait);
+    wait();
+  });
+
+  function init(){
+    // 수치(문제 해)
+    const a = 8, b = 8, c = 4*Math.sqrt(5); // 중심 좌표
+    const r = 12;
+
+    const app = document.getElementById('app');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0b1020);
+
+    const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 2000);
+    camera.position.set(40, 34, 42);
+
+    const renderer = new THREE.WebGLRenderer({ antialias:true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    app.appendChild(renderer.domElement);
+
+    // 컨트롤
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.minDistance = 10;
+    controls.maxDistance = 400;
+
+    // 조명
+    scene.add(new THREE.HemisphereLight(0xbcccdc, 0x0f172a, 0.9));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.9); dir.position.set(30,40,50); scene.add(dir);
+
+    // 축/격자
+    scene.add(new THREE.AxesHelper(80));
+    const gxz = new THREE.GridHelper(160, 32, 0x334155, 0x1f2937); scene.add(gxz);         // y=0
+    const gxy = new THREE.GridHelper(160, 32, 0x334155, 0x1f2937); gxy.rotation.x=Math.PI/2; scene.add(gxy); // z=0
+    const gyz = new THREE.GridHelper(160, 32, 0x334155, 0x1f2937); gyz.rotation.z=Math.PI/2; scene.add(gyz); // x=0
+
+    // 구
+    const sphereGeo = new THREE.SphereGeometry(r, 64, 64);
+    const sphereMat = new THREE.MeshStandardMaterial({ color:0x38bdf8, metalness:0.2, roughness:0.35 });
+    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+    sphere.position.set(a,b,c);
+    scene.add(sphere);
+
+    // 윤곽선(보기 편하게)
+    const edge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(sphereGeo),
+      new THREE.LineBasicMaterial({ color:0xffffff, opacity:0.6, transparent:true })
+    );
+    edge.position.copy(sphere.position);
+    scene.add(edge);
+
+    // xy평면 교선 원 (반지름 8, 중심 (a,b,0))
+    const circleR = 8, circleC = new THREE.Vector3(a,b,0);
+    const pts = [], N=128;
+    for(let i=0;i<=N;i++){
+      const t=i/N*Math.PI*2;
+      pts.push(new THREE.Vector3(circleC.x+circleR*Math.cos(t), circleC.y+circleR*Math.sin(t), 0));
+    }
+    const circle = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineDashedMaterial({ color:0xfde68a, dashSize:1.2, gapSize:0.6 })
+    );
+    circle.computeLineDistances();
+    scene.add(circle);
+
+    // z축과의 두 교점 (c±4) — 점으로 표기
+    const dotGeo = new THREE.SphereGeometry(0.7, 20, 20);
+    const dotMat = new THREE.MeshStandardMaterial({ color:0xf97316, emissive:0x7c2d12, emissiveIntensity:0.35 });
+    const p1 = new THREE.Mesh(dotGeo, dotMat); p1.position.set(0,0,c+4); scene.add(p1);
+    const p2 = new THREE.Mesh(dotGeo, dotMat); p2.position.set(0,0,c-4); scene.add(p2);
+
+    // x, y축 접점(수선의 발)
+    const footMat = new THREE.MeshStandardMaterial({ color:0x10b981, emissive:0x064e3b, emissiveIntensity:0.25 });
+    const fx = new THREE.Mesh(new THREE.SphereGeometry(0.7,20,20), footMat); fx.position.set(a,0,0); scene.add(fx);
+    const fy = new THREE.Mesh(new THREE.SphereGeometry(0.7,20,20), footMat); fy.position.set(0,b,0); scene.add(fy);
+
+    // 카메라 프레이밍
+    const box = new THREE.Box3().setFromObject(sphere);
+    const size = box.getSize(new THREE.Vector3()).length();
+    const center = box.getCenter(new THREE.Vector3());
+    controls.target.copy(center);
+    camera.position.copy(center).add(new THREE.Vector3(size*0.9, size*0.7, size*0.9));
+    camera.near = 0.1; camera.far = Math.max(1000, size*10); camera.updateProjectionMatrix();
+
+    // 루프
+    (function tick(){
+      controls.update();
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    })();
+
+    // 리사이즈
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth/innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  }
+  </script>
+</body>
+</html>
