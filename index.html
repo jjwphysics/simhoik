@@ -66,9 +66,7 @@
     /* 섹션 내용이 배경 위에 올라오도록 */
     section > * { position: relative; z-index: 2; }
 
-    /* === 섹션별 배경 이미지 레이어 (::before) ===
-       data-bg 로 넣은 이미지를 흐리게/희미하게 깔아준다.
-       본문(body)의 Tailwind 그라디언트는 그대로 남고, 이미지는 낮은 불투명도 + 블러로만 보임. */
+    /* === 섹션별 배경 이미지 레이어 (::before) === */
     section[data-bg]::before {
       content: "";
       position: absolute; inset: -6%;  /* 약간 키워서 블러 테두리 보임 방지 */
@@ -81,8 +79,7 @@
       transform: scale(1.06);
       pointer-events: none;
     }
-    /* 색/그라디언트 틴트 레이어 (::after)
-       섹션 배경색(바디 그라디언트) 느낌을 유지하도록 이미지 위로 얇게 덮는다. */
+    /* 색/그라디언트 틴트 레이어 (::after) */
     section[data-bg]::after {
       content: "";
       position: absolute; inset: 0;
@@ -167,8 +164,7 @@
     .glow-sm { text-shadow: 0 0 3px rgba(56,189,248,.45), 0 0 10px rgba(56,189,248,.28); animation: pulseGlow 3.8s ease-in-out infinite; }
     @media (prefers-reduced-motion: reduce){ .glow, .glow-sm { animation: none; } }
   
-    /* ===== 은은한 GIF 배경 (타일 반복) =====
-       섹션별 이미지가 더 중요하면 아래 display:none 으로 끄면 됨. */
+    /* ===== 은은한 GIF 배경 (타일 반복) ===== */
     #gif-background {
       position: fixed;
       inset: 0;
@@ -185,6 +181,61 @@
     @media (prefers-reduced-motion: reduce){
       #gif-background{ display:none; }
     }
+
+    /* ===================== */
+    /* ===== 속보 팝업 ===== */
+    /* ===================== */
+    :root { --news-accent: #38bdf8; }
+    .news-toast {
+      position: fixed; top: 1rem; right: 1rem; z-index: 70;
+      width: min(90vw, 440px);
+      color: #e5edf6;
+      background: rgba(2,6,23,.62);
+      border: 1px solid rgba(148,163,184,.28);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(2,6,23,.55), 0 0 30px rgba(56,189,248,.12) inset;
+      backdrop-filter: blur(10px) saturate(1.1);
+      -webkit-backdrop-filter: blur(10px) saturate(1.1);
+      overflow: hidden;
+      opacity: 0; transform: translate3d(10px,-10px,0) scale(.98);
+      pointer-events: auto;
+    }
+    .news-toast::before{
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(120% 150% at 100% -20%, rgba(56,189,248,.22), transparent 52%);
+      pointer-events:none;
+    }
+    .news-toast.show{ animation: toastIn .65s cubic-bezier(.2,.8,.2,1) forwards, floatPulse 8s ease-in-out .8s infinite; }
+    .news-toast.hide{ opacity:0; transform: translate3d(6px,-6px,0) scale(.98); transition: opacity .25s ease, transform .25s ease; }
+
+    .news-head{ display:flex; align-items:center; gap:.6rem; padding:.85rem 1rem .35rem 1rem; }
+    .news-badge{
+      font-weight: 900; letter-spacing:.06em; font-size:.9rem;
+      padding:.18rem .6rem; border-radius:999px;
+      background: linear-gradient(90deg, #fda4af, #fb7185, var(--news-accent));
+      color:#0b1220; text-shadow: 0 1px 0 rgba(255,255,255,.25);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.22) inset, 0 2px 10px rgba(251,113,133,.35);
+      animation: badgePulse 2.4s ease-in-out infinite;
+    }
+    .news-close{
+      margin-left:auto; border:0; background:transparent; color:#cbd5e1;
+      font-size:1.2rem; line-height:1; cursor:pointer; padding:.25rem;
+      border-radius:8px;
+    }
+    .news-close:hover{ background: rgba(255,255,255,.06); color:#ffffff; }
+
+    .news-body{ padding:.2rem 1rem 1rem 1rem; }
+    .news-title{ font-weight:800; font-size:1.02rem; line-height:1.25; color:#e2f1ff; margin: .25rem 0 .4rem; }
+    .news-text{ font-size:.95rem; color:#c6d2e1; line-height:1.55; }
+
+    .news-bar{ height:3px; background: linear-gradient(90deg, var(--news-accent), transparent); opacity:.9; }
+
+    @keyframes toastIn { 0%{opacity:0; transform: translate3d(24px,-18px,0) scale(.94)} 60%{opacity:1; transform: translate3d(0,0,0) scale(1.01)} 100%{opacity:1; transform: translate3d(0,0,0) scale(1)} }
+    @keyframes floatPulse { 0%,100%{ transform: translateY(0)} 50%{ transform: translateY(-2px)} }
+    @keyframes badgePulse { 0%,100%{ filter: saturate(1)} 50%{ filter: saturate(1.35) brightness(1.08)} }
+
+    @media (max-width: 480px){ .news-title{font-size: .98rem;} }
+    @media (prefers-reduced-motion: reduce){ .news-toast{ animation:none !important; transition:none !important; } .news-badge{ animation:none !important; } }
   </style>
 </head>
 <body class="min-h-screen font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900">
@@ -197,11 +248,25 @@
       <a href="/hoik.html">호익문학</a>
     </nav>
   </header>
+
+  <!-- ■■■ 속보 팝업 (오른쪽 상단) ■■■ -->
+  <aside id="breaking-news" class="news-toast" role="dialog" aria-live="polite" aria-label="속보 알림">
+    <div class="news-head">
+      <span class="news-badge">속보!</span>
+      <button id="news-close" class="news-close" aria-label="닫기">×</button>
+    </div>
+    <div class="news-body">
+      <div class="news-bar" aria-hidden="true"></div>
+      <h3 class="news-title">[속보!] 호익의 우산 탈취 검거</h3>
+      <p class="news-text">
+        식당에서 브라질전 친선경기를 보다 밖에 비가 와, 호익이 식당에서 우산을 탈취하려 했으나 검거되어 검찰에 송치되었습니다.
+      </p>
+    </div>
+  </aside>
+
   <div id="container" class="section-container">
 
-    <!-- 첫 섹션
-         ▼▼▼ 여기 data-bg 에 네가 원하는 이미지 링크를 넣으면 된다.
-         필요시 data-blur, data-bg-opacity, data-tint 로 강도와 색감을 조절. -->
+    <!-- 첫 섹션 -->
     <section id="home"
              data-bg="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYlX9Pk_lw5RUNgJNoSFOVSPUSHzAU3crM7A&s"
              data-blur="22"                   
@@ -216,8 +281,7 @@
       <div class="mt-10"><span class="text-slate-500 animate-bounce">▼ Scroll</span></div>
     </section>
 
-    <!-- 두 번째 섹션
-         ▼▼▼ 이 섹션에도 원하는 배경 이미지를 data-bg 로 넣을 수 있음. -->
+    <!-- 두 번째 섹션 -->
     <section id="about"
              data-bg="https://img.khan.co.kr/news/2012/04/30/l_2012043001004055300311093.webp"
              data-blur="16"
@@ -228,7 +292,8 @@
         놀랍게도, 호익은 사람의 이름이다.<br>
         2005년 여수에서 태어난 것으로 추정된다.<br>
         이름은 호익의 할아버지께서 지어 주셨다고 한다.<br>
-        그러나 아직 학계는 이것이 진정 사람의 이름인지 연구 중이라고 한다.
+        그러나 아직 학계는 이것이 진정 사람의 이름인지 연구 중이라고 한다.<br>
+        그는 현재 국민대학교에 재학 중이다. 온 세상이 호익을 알게 하는 것이 소기의 목적이다.
       </p>
     </section>
 
@@ -299,6 +364,32 @@
         sec.style.setProperty('--bg-tint', sec.dataset.tint);
       }
     });
+
+    /* ============================= */
+    /* 속보 팝업 동작 (on load show) */
+    /* ============================= */
+    const newsToast = document.getElementById('breaking-news');
+    const newsCloseBtn = document.getElementById('news-close');
+
+    function showBreakingNews(){
+      if (!newsToast) return;
+      newsToast.classList.add('show');
+    }
+    function hideBreakingNews(){
+      if (!newsToast) return;
+      newsToast.classList.remove('show');
+      newsToast.classList.add('hide');
+      setTimeout(() => newsToast.remove(), 280);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // 페이지 진입 후 약간의 지연 뒤 표시 (느낌 살리기)
+      setTimeout(showBreakingNews, 620);
+    });
+
+    newsCloseBtn?.addEventListener('click', hideBreakingNews);
+    // 토스트 클릭 시도 닫히게 하려면 아래 주석 해제
+    // newsToast?.addEventListener('click', hideBreakingNews);
   </script>
 </body>
 </html>
