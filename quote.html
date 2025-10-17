@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>H O I K — 호익어록</title>
+  <meta name="theme-color" content="#000" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { ink: "#111111", paper: "#f8f8f8" },
+          letterSpacing: { tight2: "-.025em" }
+        },
+        fontFamily: {
+          serif: ["Noto Serif KR","Nanum Myeongjo","Iowan Old Style","serif"]
+        }
+      }
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    html,body{height:100%; background:#000; color:#fff;}
+
+    header.site-header{position:fixed;top:0;left:0;right:0;z-index:60;backdrop-filter:blur(8px);background:rgba(2,6,23,.35);border-bottom:1px solid rgba(148,163,184,.2)}
+    header.site-header nav{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+    header.site-header a{display:block;text-align:center;padding:.8rem 0;border-right:1px solid rgba(148,163,184,.15);text-decoration:none;color:#e5edf6}
+    header.site-header a:last-child{border-right:0}
+    header.site-header a:hover{background:rgba(255,255,255,.06)}
+
+    .reveal{opacity:.35;transition:opacity .9s ease} 
+    .reveal.in{opacity:1} 
+
+    .quote-block{min-height:64vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden} 
+    .q-gap{margin-bottom:5.5rem}
+
+    .ghost-wrap{position:relative;display:inline-block;line-height:1.08;z-index:2}
+    .headline{position:relative;z-index:3}
+    .headline-box{position:relative;display:inline-block;text-align:center}
+
+    /* — 연기 섀도우: 펄럭임 완화, 균등한 일렁임 — */
+    .smoke{--a:rgba(255,255,255,.19);--b:rgba(255,255,255,.10);--c:rgba(255,255,255,.06);
+      text-shadow:-1px 0 10px var(--a), 0 2px 16px var(--b), 1px 0 12px var(--c);
+      animation:shadowWave 16s ease-in-out infinite;
+      will-change:text-shadow; }
+    @keyframes shadowWave{
+      0%  { text-shadow: -1px 0 10px var(--a), 0 2px 16px var(--b), 1px 0 12px var(--c); }
+      25% { text-shadow:  0   0 11px var(--a), 1px 2px 17px var(--b), -1px 0 12px var(--c); }
+      50% { text-shadow:  1px 0 10px var(--a), 0 3px 16px var(--b),  1px 0 12px var(--c); }
+      75% { text-shadow:  0   0 11px var(--a), -1px 2px 17px var(--b), -1px 0 12px var(--c); }
+      100%{ text-shadow: -1px 0 10px var(--a), 0 2px 16px var(--b),  1px 0 12px var(--c); }
+    }
+      25%{letter-spacing:0.002em;filter:url(#smoke) blur(0.5px)}
+      50%{letter-spacing:0em;filter:url(#smoke) blur(1px)}
+      75%{letter-spacing:-0.001em;filter:url(#smoke) blur(0.5px)}
+      100%{letter-spacing:0em;filter:url(#smoke) blur(0px)}
+    }
+
+    .block-bg{position:absolute;inset:-4%;z-index:0;background-size:cover;background-position:center;filter:blur(28px) saturate(1.05);opacity:.12;transform:scale(1.04)}
+
+    .fog-layer{position:absolute;inset:-6%;z-index:1;opacity:.08;filter:blur(22px) contrast(1.03);background:radial-gradient(60% 60% at 45% 55%,rgba(255,255,255,.28),rgba(255,255,255,0)60%),radial-gradient(50% 50% at 60% 48%,rgba(255,255,255,.18),rgba(255,255,255,0)60%);animation:fogwave 24s ease-in-out infinite alternate;mix-blend-mode:screen; will-change:transform} 
+    @keyframes fogwave{0%{transform:translate3d(-1%,0,0)}100%{transform:translate3d(1%,0,0)}}
+    @keyframes fogwave{0%{transform:translate3d(-1%,1%,0)}100%{transform:translate3d(1%,-1%,0)}}
+
+    .meta{margin-top:.65rem;font-size:.75rem;letter-spacing:.2em;color:rgba(255,255,255,.55)}
+  </style>
+</head>
+<body class="bg-black text-white font-serif">
+  <header class="site-header">
+    <nav>
+      <a href="/">메인</a>
+      <a href="/hoik.html">호익문학</a>
+      <a href="/quote.index">호익어록</a>
+    </nav>
+  </header>
+
+  <main id="list" class="mx-auto max-w-5xl px-6 pt-28 pb-24"></main>
+
+  <script>
+    const QUOTES=[{text:"자뻑은 자지로 뻑간다는 말의 줄임말이다.",date:"2025-10-17",desc:"솔랭을 하다 정신이 미치며",img:"PUT_IMAGE_URL_1"},{text:"난 할머니가 좋아",date:"2025-always",desc:"그가 항상 달고 사는 말",img:"PUT_IMAGE_URL_2"},}];
+
+    const list=document.getElementById('list');
+    QUOTES.forEach((q,i)=>{
+      const size=Math.max(34,78-i*4);
+      const weight=i<2?900:(i<4?800:700);
+      const block=document.createElement('section');
+      block.className='reveal quote-block q-gap';
+      block.innerHTML=`
+        <div class="block-bg" style="background-image:url('${escapeHTML(q.img||'')}')"></div>
+        <div class="fog-layer"></div>
+        <div class="ghost-wrap text-center" style="font-weight:${weight}">
+          <div class="headline-box" style="font-family:'Noto Serif KR','Nanum Myeongjo',serif;font-size:${size}px;">
+            <div class="headline smoke">${escapeHTML(q.text)}</div>
+            <div class="meta">${formatDate(q.date)} · ${escapeHTML(q.desc||'')}</div>
+          </div>
+        </div>`;
+      list.appendChild(block);
+    });
+
+    const io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');else e.target.classList.remove('in');});},{threshold:0.2});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    function formatDate(iso){if(!iso)return'';const d=new Date(iso);return`${d.getMonth()+1}월 ${d.getDate()}일`;}
+    function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
+  </script>
+
+  
+</body>
+</html>
