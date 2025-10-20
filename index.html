@@ -8,20 +8,15 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    /* Tailwind CDN config — 첫 코드와 동일하게 폰트 스택에 Pretendard를 최우선으로 등록 */
+    /* Tailwind CDN config — 첫 코드와 동일 */
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
             sans: ["Pretendard Variable", "Inter", "system-ui", "Noto Sans KR", "Apple SD Gothic Neo", "sans-serif"]
           },
-          letterSpacing: {
-            widehero: ".4em"
-          },
-          colors: {
-            ink: { DEFAULT: "#f1f5f9" },
-            accent: { DEFAULT: "#38bdf8" }
-          }
+          letterSpacing: { widehero: ".4em" },
+          colors: { ink: { DEFAULT: "#f1f5f9" }, accent: { DEFAULT: "#38bdf8" } }
         }
       }
     };
@@ -108,16 +103,8 @@
       gap: 10px;
       z-index: 50;
     }
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: #475569;
-      transition: background-color 0.3s;
-    }
-    .dot.active {
-      background-color: #38bdf8;
-    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background-color: #475569; transition: background-color 0.3s; }
+    .dot.active { background-color: #38bdf8; }
   
     /* ===== Rainbow outline that orbits the text + bloom ===== */
     .hoik { position: relative; display: inline-block; }
@@ -150,17 +137,8 @@
     .hoik .stroke{fill:none; stroke:url(#rg); stroke-width:28; stroke-linejoin:round; filter:url(#glow); opacity:.95}
   
     /* === rollback: soft neon glow for HOIK text === */
-    .glow {
-      text-shadow:
-        0 0 6px rgba(56, 189, 248, 0.5),
-        0 0 20px rgba(56, 189, 248, 0.3),
-        0 0 40px rgba(56, 189, 248, 0.15);
-      animation: pulseGlow 3.8s ease-in-out infinite;
-    }
-    @keyframes pulseGlow {
-      0%, 100% { text-shadow: 0 0 5px rgba(56,189,248,.45), 0 0 16px rgba(56,189,248,.28), 0 0 32px rgba(56,189,248,.12); }
-      50% { text-shadow: 0 0 9px rgba(56,189,248,.95), 0 0 26px rgba(56,189,248,.6), 0 0 54px rgba(56,189,248,.32); }
-    }
+    .glow { text-shadow: 0 0 6px rgba(56,189,248,0.5), 0 0 20px rgba(56,189,248,0.3), 0 0 40px rgba(56,189,248,0.15); animation: pulseGlow 3.8s ease-in-out infinite; }
+    @keyframes pulseGlow { 0%, 100% { text-shadow: 0 0 5px rgba(56,189,248,.45), 0 0 16px rgba(56,189,248,.28), 0 0 32px rgba(56,189,248,.12); } 50% { text-shadow: 0 0 9px rgba(56,189,248,.95), 0 0 26px rgba(56,189,248,.6), 0 0 54px rgba(56,189,248,.32); } }
     .glow-sm { text-shadow: 0 0 3px rgba(56,189,248,.45), 0 0 10px rgba(56,189,248,.28); animation: pulseGlow 3.8s ease-in-out infinite; }
     @media (prefers-reduced-motion: reduce){ .glow, .glow-sm { animation: none; } }
   
@@ -178,9 +156,7 @@
       filter: brightness(1.05) contrast(1.05) saturate(1.05);
       /* display: none; */
     }
-    @media (prefers-reduced-motion: reduce){
-      #gif-background{ display:none; }
-    }
+    @media (prefers-reduced-motion: reduce){ #gif-background{ display:none; } }
 
     /* ===================== */
     /* ===== 속보 팝업 ===== */
@@ -198,30 +174,14 @@
       -webkit-backdrop-filter: blur(10px) saturate(1.1);
       overflow: hidden;
       opacity: 0; transform: translate3d(10px,-10px,0) scale(.98);
-      pointer-events: auto;
     }
-    .news-toast::before{
-      content: ""; position: absolute; inset: 0;
-      background: radial-gradient(120% 150% at 100% -20%, rgba(56,189,248,.22), transparent 52%);
-      pointer-events:none;
-    }
+    .news-toast::before{ content: ""; position: absolute; inset: 0; background: radial-gradient(120% 150% at 100% -20%, rgba(56,189,248,.22), transparent 52%); pointer-events:none; }
     .news-toast.show{ animation: toastIn .65s cubic-bezier(.2,.8,.2,1) forwards, floatPulse 8s ease-in-out .8s infinite; }
     .news-toast.hide{ opacity:0; transform: translate3d(6px,-6px,0) scale(.98); transition: opacity .25s ease, transform .25s ease; }
 
     .news-head{ display:flex; align-items:center; gap:.6rem; padding:.85rem 1rem .35rem 1rem; }
-    .news-badge{
-      font-weight: 900; letter-spacing:.06em; font-size:.9rem;
-      padding:.18rem .6rem; border-radius:999px;
-      background: linear-gradient(90deg, #fda4af, #fb7185, var(--news-accent));
-      color:#0b1220; text-shadow: 0 1px 0 rgba(255,255,255,.25);
-      box-shadow: 0 0 0 1px rgba(255,255,255,.22) inset, 0 2px 10px rgba(251,113,133,.35);
-      animation: badgePulse 2.4s ease-in-out infinite;
-    }
-    .news-close{
-      margin-left:auto; border:0; background:transparent; color:#cbd5e1;
-      font-size:1.2rem; line-height:1; cursor:pointer; padding:.25rem;
-      border-radius:8px;
-    }
+    .news-badge{ font-weight: 900; letter-spacing:.06em; font-size:.9rem; padding:.18rem .6rem; border-radius:999px; background: linear-gradient(90deg, #fda4af, #fb7185, var(--news-accent)); color:#0b1220; text-shadow: 0 1px 0 rgba(255,255,255,.25); box-shadow: 0 0 0 1px rgba(255,255,255,.22) inset, 0 2px 10px rgba(251,113,133,.35); animation: badgePulse 2.4s ease-in-out infinite; }
+    .news-close{ margin-left:auto; border:0; background:transparent; color:#cbd5e1; font-size:1.2rem; line-height:1; cursor:pointer; padding:.25rem; border-radius:8px; }
     .news-close:hover{ background: rgba(255,255,255,.06); color:#ffffff; }
 
     .news-body{ padding:.2rem 1rem 1rem 1rem; }
@@ -236,6 +196,77 @@
 
     @media (max-width: 480px){ .news-title{font-size: .98rem;} }
     @media (prefers-reduced-motion: reduce){ .news-toast{ animation:none !important; transition:none !important; } .news-badge{ animation:none !important; } }
+
+
+    /* ============================== */
+    /* ===== XP 스타일 비디오 창 ===== */
+    /* ============================== */
+    .xp-window {
+      position: fixed; top: 12vh; left: 5vw;
+      width: 360px; max-width: min(88vw, 480px);
+      background: #ece9d8; /* XP 윈도우 바디 색 */
+      border-radius: 10px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.25) inset;
+      z-index: 120; /* 뉴스 토스트(70)보다 위 */
+      opacity: 0; transform: translateY(-8px) scale(.98);
+      transition: opacity .45s ease, transform .45s ease;
+      overflow: visible; /* 테두리 애니메이션 표시 */
+    }
+    .xp-window.show { opacity: 1; transform: translateY(0) scale(1); }
+
+    /* Crime Scene Tape Border (검/노 선이 도는 효과) */
+    .xp-window::after {
+      content: "";
+      position: absolute; inset: -2px; /* 창 바깥으로 살짝 */
+      border-radius: 12px;
+      background: repeating-linear-gradient(45deg, #0a0a0a 0 12px, #facc15 12px 24px);
+      background-size: 32px 32px;
+      animation: borderSlide 1.2s linear infinite;
+      /* 안쪽은 투명, 테두리만 보이게 마스크 */
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      padding: 2px; /* 테두리 두께 */
+      pointer-events: none; opacity: .9;
+    }
+    @keyframes borderSlide { to { background-position: 64px 0; } }
+
+    .xp-titlebar {
+      position: relative;
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 6px; height: 28px;
+      background: linear-gradient(#121314, #0a0b0c);
+      color: #fff; user-select: none; cursor: grab;
+      border-top-left-radius: 10px; border-top-right-radius: 10px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.55);
+    }
+    .xp-titlebar:active { cursor: grabbing; }
+    .xp-title { font-weight: 700; text-shadow: 0 1px 1px rgba(0,0,0,.35); letter-spacing: .02em; font-size: 14px; }
+    .xp-controls { margin-left: auto; display: flex; gap: 6px; }
+    .xp-btn { width: 18px; height: 18px; border: 1px solid #000; border-radius: 3px; display: grid; place-items: center; position: relative; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.35); }
+    .xp-btn.min { background: linear-gradient(#ffe082,#f2b307); color: #1a1a1a; }
+    .xp-btn.max { background: linear-gradient(#93e27a,#3ea64c); color: #0a3d00; }
+    .xp-btn.close { background: linear-gradient(#ff7a7a,#d93434); color: #4a0000; }
+    .xp-btn:hover { filter: brightness(1.05) saturate(1.1); }
+
+    .xp-content { background: #f7f7f7; padding: 8px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
+    .xp-frame { background: #000; border-radius: 8px; overflow: hidden; display: block; width: 330px; max-width: calc(100vw - 40px); }
+    .xp-frame video { display: block; width: 100%; height: auto; aspect-ratio: 9/16; object-fit: contain; background: #000; }
+    @media (min-width: 480px){ .xp-frame { width: 360px; } }
+
+    .xp-window.maximized { top: 10px !important; left: 10px !important; width: calc(100vw - 20px) !important; }
+    .xp-window.maximized .xp-frame { width: 100%; }
+    .xp-window.minimized .xp-content { display: none; }
+      /* injected: XP black titlebar shine, XP icon, and control glyphs */
+    .xp-titlebar::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; border-top-left-radius: 10px; border-top-right-radius: 10px; background: rgba(255,255,255,.22); pointer-events: none; }
+    .xp-icon { width: 16px; height: 16px; border-radius: 3px; background: linear-gradient(#ffffff,#d9e6ff); box-shadow: inset 0 0 0 1px #9ec9ff, 0 0 0 1px rgba(0,0,0,.35); }
+    .xp-btn.min::before { content: ""; width: 10px; height: 2px; background: #1a1a1a; display: block; }
+    .xp-btn.max::before { content: ""; width: 10px; height: 10px; box-sizing: border-box; border: 2px solid #0a2f0a; background: transparent; display: block; }
+    .xp-btn.close::before, .xp-btn.close::after { content: ""; position: absolute; width: 11px; height: 2px; background: #2b0000; }
+    .xp-btn.close::before { transform: rotate(45deg); }
+    .xp-btn.close::after { transform: rotate(-45deg); }
+    .xp-window { border: 1px solid #0d0d0d; }
+    .xp-window::before { content: ""; position: absolute; inset: 0; border-radius: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.6) inset, 0 0 0 2px rgba(0,0,0,.45) inset; pointer-events: none; }
   </style>
 </head>
 <body class="min-h-screen font-sans text-slate-100 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900">
@@ -260,20 +291,37 @@
     <div class="news-body">
       <div class="news-bar" aria-hidden="true"></div>
       <h3 class="news-title">[속보!] 호익의 우산 탈취 검거</h3>
-      <p class="news-text">
-        식당에서 브라질전 친선경기를 보다 밖에 비가 와, 호익이 식당에서 우산을 탈취하려 했으나 검거되어 검찰에 송치되었습니다.
-      </p>
+      <p class="news-text">식당에서 브라질전 친선경기를 보다 밖에 비가 와, 호익이 식당에서 우산을 탈취하려 했으나 검거되어 검찰에 송치되었습니다.</p>
     </div>
   </aside>
+
+  <!-- ★★★ Windows XP 스타일 비디오 팝업 ★★★ -->
+  <div id="xp-window" class="xp-window" role="dialog" aria-label="sokbo.mp4 팝업">
+    <div id="xp-titlebar" class="xp-titlebar">
+      <span class="xp-icon" aria-hidden="true"></span>
+      <span class="xp-title">sokbo.mp4 — Windows XP</span>
+      <div class="xp-controls">
+        <button id="xp-min" class="xp-btn min" aria-label="최소화"></button>
+        <button id="xp-max" class="xp-btn max" aria-label="최대화"></button>
+        <button id="xp-close" class="xp-btn close" aria-label="닫기"></button>
+      </div>
+    </div>
+    <div class="xp-content">
+      <div class="xp-frame">
+        <!-- 세로 영상: 자동재생을 위해 muted / playsinline 필요 (모바일 정책) -->
+        <video src="sokbo.mp4" autoplay muted loop playsinline controls></video>
+      </div>
+    </div>
+  </div>
 
   <div id="container" class="section-container">
 
     <!-- 첫 섹션 -->
     <section id="home"
              data-bg="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYlX9Pk_lw5RUNgJNoSFOVSPUSHzAU3crM7A&s"
-             data-blur="22"                   
-             data-bg-opacity=".34"            
-             data-tint="rgba(2,6,23,.45)"     
+             data-blur="22"
+             data-bg-opacity=".34"
+             data-tint="rgba(2,6,23,.45)"
              style="padding-top:3.5rem">
       <p class="text-slate-400 mb-6">어떻게 사람 이름이...</p>
       <h1 class="glow font-extrabold leading-none mb-4 text-[20vw] sm:text-[16vw] md:text-[13vw]">HOIK!</h1>
@@ -309,13 +357,12 @@
 
   <script>
     const container = document.getElementById('container');
-    const dots = document.querySelectorAll('.dot');
     let current = 0;
     let total = 2; // 섹션 갯수에 맞게 자동 계산하도록 아래서 덮어씀
 
     function updateSlide(index) {
       container.style.transform = `translateY(-${index * 100}vh)`;
-      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      document.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === index));
       current = index;
     }
 
@@ -336,7 +383,7 @@
     const sections = Array.from(document.querySelectorAll('section'));
     total = sections.length; // 실제 섹션 수로 갱신
 
-    // 인디케이터 점 갯수 자동 생성 (필요시)
+    // 인디케이터 점 자동 생성
     const indicator = document.querySelector('.indicator');
     if (indicator && indicator.children.length !== total) {
       indicator.innerHTML = '';
@@ -348,23 +395,12 @@
       }
     }
 
-    // data-bg, data-blur, data-bg-opacity, data-tint → CSS 변수로 주입
+    // data-* → CSS 변수로 주입
     sections.forEach(sec => {
-      const url = sec.dataset.bg;
-      if (url) {
-        sec.style.setProperty('--bg', `url("${url}")`);
-      }
-      if (sec.dataset.blur) {
-        const v = sec.dataset.blur.trim();
-        sec.style.setProperty('--blur', /px$/.test(v) ? v : v + 'px');
-      }
-      if (sec.dataset.bgOpacity) {
-        sec.style.setProperty('--bg-opacity', sec.dataset.bgOpacity);
-      }
-      if (sec.dataset.tint) {
-        // 색값 또는 linear-gradient(...) 모두 허용
-        sec.style.setProperty('--bg-tint', sec.dataset.tint);
-      }
+      const url = sec.dataset.bg; if (url) sec.style.setProperty('--bg', `url("${url}")`);
+      if (sec.dataset.blur) sec.style.setProperty('--blur', (/px$/.test(sec.dataset.blur.trim()) ? sec.dataset.blur.trim() : sec.dataset.blur.trim() + 'px'));
+      if (sec.dataset.bgOpacity) sec.style.setProperty('--bg-opacity', sec.dataset.bgOpacity);
+      if (sec.dataset.tint) sec.style.setProperty('--bg-tint', sec.dataset.tint);
     });
 
     /* ============================= */
@@ -372,26 +408,101 @@
     /* ============================= */
     const newsToast = document.getElementById('breaking-news');
     const newsCloseBtn = document.getElementById('news-close');
+    function showBreakingNews(){ if (!newsToast) return; newsToast.classList.add('show'); }
+    function hideBreakingNews(){ if (!newsToast) return; newsToast.classList.remove('show'); newsToast.classList.add('hide'); setTimeout(() => newsToast.remove(), 280); }
+    newsCloseBtn?.addEventListener('click', hideBreakingNews);
 
-    function showBreakingNews(){
-      if (!newsToast) return;
-      newsToast.classList.add('show');
-    }
-    function hideBreakingNews(){
-      if (!newsToast) return;
-      newsToast.classList.remove('show');
-      newsToast.classList.add('hide');
-      setTimeout(() => newsToast.remove(), 280);
+    /* ===================================== */
+    /* Windows XP 스타일 비디오 팝업 로직   */
+    /* ===================================== */
+    const xpWin = document.getElementById('xp-window');
+    const xpBar = document.getElementById('xp-titlebar');
+    const xpMin = document.getElementById('xp-min');
+    const xpMax = document.getElementById('xp-max');
+    const xpClose = document.getElementById('xp-close');
+
+    let topZ = 120; // 창 클릭 시 위로 올리기
+    let drag = { active: false, dx: 0, dy: 0, pid: null };
+    let prevGeom = null; // 최대화 전 위치/크기 저장
+
+    function centerXP(){
+      const rect = xpWin.getBoundingClientRect();
+      const x = Math.max(10, (window.innerWidth - rect.width) / 2);
+      const y = Math.max(20, (window.innerHeight - rect.height) / 3);
+      xpWin.style.left = x + 'px';
+      xpWin.style.top  = y + 'px';
     }
 
+    function bringFront(){ xpWin.style.zIndex = (++topZ).toString(); }
+
+    // 드래그 (Pointer Events)
+    xpBar.addEventListener('pointerdown', (e) => {
+      bringFront();
+      if (xpWin.classList.contains('maximized')) return; // 최대화 상태에선 드래그 X
+      drag.active = true; drag.pid = e.pointerId;
+      const rect = xpWin.getBoundingClientRect();
+      drag.dx = e.clientX - rect.left;
+      drag.dy = e.clientY - rect.top;
+      xpBar.setPointerCapture?.(e.pointerId);
+      e.preventDefault();
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!drag.active || e.pointerId !== drag.pid) return;
+      let nx = e.clientX - drag.dx;
+      let ny = e.clientY - drag.dy;
+      // 화면 경계 클램프
+      const w = xpWin.offsetWidth, h = xpWin.offsetHeight;
+      nx = Math.min(window.innerWidth - 40, Math.max(10 - (w - 50), nx));
+      ny = Math.min(window.innerHeight - 40, Math.max(10, ny));
+      xpWin.style.left = nx + 'px';
+      xpWin.style.top  = ny + 'px';
+    });
+    window.addEventListener('pointerup', (e) => { if (e.pointerId === drag.pid) { drag.active = false; drag.pid = null; } });
+
+    // 더블클릭: 최대화/복귀
+    xpBar.addEventListener('dblclick', toggleMaximize);
+
+    function toggleMaximize(){
+      if (xpWin.classList.contains('maximized')) {
+        // 복귀
+        xpWin.classList.remove('maximized');
+        if (prevGeom) {
+          xpWin.style.left = prevGeom.left;
+          xpWin.style.top  = prevGeom.top;
+          xpWin.style.width = prevGeom.width;
+        }
+        prevGeom = null;
+      } else {
+        // 저장 후 최대화
+        prevGeom = { left: xpWin.style.left, top: xpWin.style.top, width: xpWin.style.width };
+        xpWin.classList.add('maximized');
+        xpWin.style.width = 'calc(100vw - 20px)';
+      }
+      bringFront();
+    }
+
+    xpMin.addEventListener('click', () => { xpWin.classList.toggle('minimized'); bringFront(); });
+    xpMax.addEventListener('click', () => toggleMaximize());
+    xpClose.addEventListener('click', () => { xpWin.style.display = 'none'; });
+
+    // 창 클릭 시 위로
+    xpWin.addEventListener('mousedown', bringFront);
+
+    // 초기 표시 타이밍
     document.addEventListener('DOMContentLoaded', () => {
-      // 페이지 진입 후 약간의 지연 뒤 표시 (느낌 살리기)
-      setTimeout(showBreakingNews, 620);
+      setTimeout(showBreakingNews, 620);   // 기존 토스트
+      setTimeout(() => {
+        xpWin.classList.add('show');
+        centerXP();
+        bringFront();
+      }, 1100);
     });
 
-    newsCloseBtn?.addEventListener('click', hideBreakingNews);
-    // 토스트 클릭 시도 닫히게 하려면 아래 주석 해제
-    // newsToast?.addEventListener('click', hideBreakingNews);
+    // 리사이즈 시 최대화/중앙정렬 보정
+    window.addEventListener('resize', () => {
+      if (xpWin.classList.contains('maximized')) return;
+      centerXP();
+    });
   </script>
 </body>
 </html>
